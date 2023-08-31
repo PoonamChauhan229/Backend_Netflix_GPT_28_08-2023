@@ -2,9 +2,20 @@ const connection=require('./db/connection')
 const dotenv=require('dotenv')
 const express=require('express')
 const app=express()
-
+const cors=require('cors')
 
 dotenv.config();
+
+// cors
+app.use(cors())
+// JSON
+app.use(express.json())
+
+// RouterAccess
+
+const userRouter=require('./routes/userRouter')
+app.use(userRouter)
+
 
 
 connection()
