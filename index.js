@@ -7,6 +7,11 @@ const cors=require('cors')
 dotenv.config();
 
 // cors
+// app.use(cors({
+//     origin: 'http://localhost:3000', // Replace with your frontend URL
+//     methods: ['GET', 'POST'],
+//     allowedHeaders: ['Content-Type', 'Authorization'],
+//   }));
 app.use(cors())
 // JSON
 app.use(express.json())

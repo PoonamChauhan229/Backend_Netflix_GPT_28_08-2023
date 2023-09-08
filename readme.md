@@ -53,6 +53,10 @@ https://joi.dev/api/?v=17.9.1
 6-Verifying the Email
 7-Comaparing the password using bcrypt
 
+>Middleware
+>jsonwebtoken
+
+
 
 
 
