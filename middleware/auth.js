@@ -15,9 +15,12 @@ const auth=async(req,res,next)=>{
     // console.log(user)
     req.user=user
     req.token=token
-    next()
+    
+    
 }catch(e){
     console.log(e,"error, Please Authenticate");
 }
+next()
+
     }
 module.exports=auth;

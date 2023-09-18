@@ -63,10 +63,12 @@ router.post('/users/signin',auth,async(req,res)=>{
     
     if(!isValidPassword) return res.status(400).send("Password Invalid")
 
-     //Token
+    console.log(user[0])
+    //  Token
      const token=await user[0].generateAuthToken()
-   
+    console.log(token)
      res.status(201).send({user,token})
 })
+
 
 module.exports=router;
