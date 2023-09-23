@@ -21,6 +21,8 @@ app.use(express.json())
 const userRouter=require('./routes/userRouter')
 app.use(userRouter)
 
+const movieRouter=require('./routes/movieRouter')
+app.use(movieRouter)
 
 
 connection()
