@@ -75,6 +75,16 @@ router.get('/nowplayingmovies', async (req, res) => {
   }
 });
 
-
+router.get('/trendingmovies',async(req,res)=>{
+  try {
+    const response = await axios.get(process.env.Movie_Trending, API_OPTIONS);
+    const trendingMovies=response.data.results
+    console.log(trendingMovies)
+    res.json(trendingMovies)
+  }
+  catch(e){
+    console.log(e)
+  }
+})
 
 module.exports = router;
