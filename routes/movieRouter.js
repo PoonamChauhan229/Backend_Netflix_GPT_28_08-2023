@@ -1,7 +1,8 @@
 const express = require('express');
 const router = express.Router();
 const axios = require('axios');
-const Movie=require('../model/movieModel');
+
+const { TrendingMovies, PopularMovies, NowPlayingMovies } = require("../model/movieModel");
 
 const API_OPTIONS = {
   method: 'GET',
@@ -13,7 +14,7 @@ const API_OPTIONS = {
 
 //console.log(process.env.Video_By_Movie_Id,process.env.Movie_Now_Playing,process.env.TMDB_token)
 
-async function updateMovieInDatabase(movies){
+async function updateMovieInDatabase(movies,Model){
   for (const value of movies) {
     // Destructure the movie object
     const { original_title, overview, poster_path, id } = value;
@@ -21,12 +22,12 @@ async function updateMovieInDatabase(movies){
    // console.log(original_title, overview, poster_path, id);
     
    // Check if the movie already exists in the database
-   const existingMovie = await Movie.findOne({ id: id });
+   const existingMovie = await Model.findOne({ id: id });
    if (!existingMovie) {
     const videoTrailer=await fetchVideoDetails(id)
     console.log(videoTrailer)
     if (Array.isArray(videoTrailer) && videoTrailer.length > 0) {
-      const newMovie = new Movie({
+      const newMovie = new Model({
         original_title,
         overview,
         poster_path,
@@ -44,7 +45,7 @@ async function updateMovieInDatabase(movies){
 
 async function fetchVideoDetails(movie_id){
   const videoUrl=process.env.Video_By_Movie_Id.replace('{movie_id}',movie_id)
-  console.log(videoUrl)
+  //console.log(videoUrl)
   const videoResponse=await axios.get(videoUrl,API_OPTIONS)
  // console.log(videoResponse.data.results)
   if(videoResponse.data.results.length<0) return;
@@ -66,8 +67,8 @@ router.get('/nowplayingmovies', async (req, res) => {
     const nowPlayingMovies=response.data.results 
    // console.log(response.data);
   //await Movie.insertMany(nowPlayingMovies)
-   await updateMovieInDatabase(nowPlayingMovies);
-  const moviePlayingDetails =await Movie.find({})
+   await updateMovieInDatabase(nowPlayingMovies,NowPlayingMovies);
+  const moviePlayingDetails =await NowPlayingMovies.find({})
     res.json(moviePlayingDetails);
   } catch (e) {
     console.error(e);
@@ -79,8 +80,10 @@ router.get('/trendingmovies',async(req,res)=>{
   try {
     const response = await axios.get(process.env.Movie_Trending, API_OPTIONS);
     const trendingMovies=response.data.results
-    console.log(trendingMovies)
-    res.json(trendingMovies)
+    //console.log(trendingMovies)
+    await updateMovieInDatabase(trendingMovies,TrendingMovies);
+  const movieTrendingDetails =await TrendingMovies.find({})
+    res.json(movieTrendingDetails);
   }
   catch(e){
     console.log(e)

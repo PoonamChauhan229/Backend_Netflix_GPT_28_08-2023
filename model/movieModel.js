@@ -27,5 +27,9 @@ const movieSchema = new mongoose.Schema({
     },
     videoTrailer:[videoTrailerSchema],
   });
-const Movie = mongoose.model("Movie", movieSchema);
-module.exports = Movie;
+const TrendingMovies = mongoose.model("TrendingMovies", movieSchema);
+const PopularMovies=mongoose.model("PopularMovies",movieSchema);
+const NowPlayingMovies=mongoose.model("NowPlayingMovies",movieSchema);
+
+
+module.exports = {TrendingMovies,PopularMovies,NowPlayingMovies};
