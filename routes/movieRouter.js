@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const axios = require('axios');
 
-const { TrendingMovies, PopularMovies, NowPlayingMovies } = require("../model/movieModel");
+const { TrendingMovies, PopularMovies, NowPlayingMovies,TopRatedMovies,UpcomingMovies } = require("../model/movieModel");
 
 const API_OPTIONS = {
   method: 'GET',
@@ -90,4 +90,48 @@ router.get('/trendingmovies',async(req,res)=>{
   }
 })
 
+router.get('/popularmovies',async(req,res)=>{
+  try {
+    const response = await axios.get(process.env.Movie_Popular, API_OPTIONS);
+    const popularMovies=response.data.results
+    //console.log(trendingMovies)
+    await updateMovieInDatabase(popularMovies,PopularMovies);
+  const moviePopularDetails =await PopularMovies.find({})
+    res.json(moviePopularDetails);
+  }
+  catch(e){
+    console.log(e)
+  }
+})
+
+
+router.get('/topratedmovies',async(req,res)=>{
+  try {
+    const response = await axios.get(process.env.Movie_Top_Rated, API_OPTIONS);
+    const topratedMovies=response.data.results
+    //console.log(trendingMovies)
+    await updateMovieInDatabase(topratedMovies,TopRatedMovies);
+  const movieTopRatedDetails =await TopRatedMovies.find({})
+    res.json(movieTopRatedDetails);
+  }
+  catch(e){
+    console.log(e)
+  }
+})
+
+
+
+router.get('/upcomingmovies',async(req,res)=>{
+  try {
+    const response = await axios.get(process.env.Movie_Upcoming, API_OPTIONS);
+    const upcomingMovies=response.data.results
+    //console.log(trendingMovies)
+    await updateMovieInDatabase(upcomingMovies,UpcomingMovies);
+  const movieupcomingDetails =await UpcomingMovies.find({})
+    res.json(movieupcomingDetails);
+  }
+  catch(e){
+    console.log(e)
+  }
+})
 module.exports = router;

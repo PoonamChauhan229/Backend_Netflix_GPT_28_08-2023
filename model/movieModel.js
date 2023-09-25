@@ -30,6 +30,8 @@ const movieSchema = new mongoose.Schema({
 const TrendingMovies = mongoose.model("TrendingMovies", movieSchema);
 const PopularMovies=mongoose.model("PopularMovies",movieSchema);
 const NowPlayingMovies=mongoose.model("NowPlayingMovies",movieSchema);
+const TopRatedMovies=mongoose.model("TopRatedMovies",movieSchema);
+const UpcomingMovies=mongoose.model("UpcomingMovies",movieSchema);
 
 
-module.exports = {TrendingMovies,PopularMovies,NowPlayingMovies};
+module.exports = {TrendingMovies,PopularMovies,NowPlayingMovies,TopRatedMovies,UpcomingMovies};
