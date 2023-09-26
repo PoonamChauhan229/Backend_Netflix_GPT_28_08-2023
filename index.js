@@ -21,8 +21,8 @@ app.use(express.json())
 const userRouter=require('./routes/userRouter')
 app.use(userRouter)
 
-const movieRouter=require('./routes/movieRouter')
-app.use(movieRouter)
+const tmdbRouter=require('./routes/tmdbRouter')
+app.use(tmdbRouter)
 
 
 connection()

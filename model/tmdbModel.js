@@ -10,15 +10,16 @@ const videoTrailerSchema = new mongoose.Schema({
 const movieSchema = new mongoose.Schema({
     original_title: {
       type: String,
-      required: true,
+    },
+    original_name:{
+      type:String,
+      default:"Random"
     },
     overview: {
       type: String,
-      required: true,
     },
     poster_path: {
       type: String,
-      required: true,
     },
     id: {
       type: Number,
