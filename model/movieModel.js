@@ -27,11 +27,19 @@ const movieSchema = new mongoose.Schema({
     },
     videoTrailer:[videoTrailerSchema],
   });
+
+// movies
 const TrendingMovies = mongoose.model("TrendingMovies", movieSchema);
 const PopularMovies=mongoose.model("PopularMovies",movieSchema);
 const NowPlayingMovies=mongoose.model("NowPlayingMovies",movieSchema);
 const TopRatedMovies=mongoose.model("TopRatedMovies",movieSchema);
 const UpcomingMovies=mongoose.model("UpcomingMovies",movieSchema);
 
+//tvSeries
 
-module.exports = {TrendingMovies,PopularMovies,NowPlayingMovies,TopRatedMovies,UpcomingMovies};
+const AiringTodayTvSeries=mongoose.model("AiringTodayTvSeries",movieSchema);
+const OnTheAirTvSeries=mongoose.model("OnTheAirTvSeries",movieSchema);
+const PopularTvSeries=mongoose.model("PopularTvSeries",movieSchema);
+const TopRatedTvSeries=mongoose.model("TopRatedTvSeries",movieSchema);
+
+module.exports = {TrendingMovies,PopularMovies,NowPlayingMovies,TopRatedMovies,UpcomingMovies,AiringTodayTvSeries,OnTheAirTvSeries,PopularTvSeries,TopRatedTvSeries};
