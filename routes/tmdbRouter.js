@@ -32,7 +32,7 @@ async function updateMovieInDatabase(movies,Model){
       id
     });
     const videoTrailer=await fetchVideoDetails(id,original_title)
-    console.log(videoTrailer)
+   // console.log(videoTrailer)
     if (Array.isArray(videoTrailer) && videoTrailer.length > 0) {
       newMovie.videoTrailer= videoTrailer     
    }
@@ -66,9 +66,6 @@ async function fetchVideoDetails(id, original_title) {
     // return [];
   }
 }
-
-
-
 
 // nowplaying Movies Route
 router.get('/nowplayingmovies', async (req, res) => {
