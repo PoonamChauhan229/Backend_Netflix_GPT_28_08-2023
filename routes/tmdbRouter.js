@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const axios = require('axios');
 const auth=require('../middleware/auth')
-const { TrendingMovies, PopularMovies, NowPlayingMovies,TopRatedMovies,UpcomingMovies,AiringTodayTvSeries,OnTheAirTvSeries,PopularTvSeries,TopRatedTvSeries } = require("../model/tmdbModel");
+const { TrendingMovies, PopularMovies, NowPlayingMovies,TopRatedMovies,UpcomingMovies,AiringTodayTvSeries,OnTheAirTvSeries,PopularTvSeries,TopRatedTvSeries,GetAllList1,GetAllList2,GetAllList3,GetAllList4,GetAllList} = require("../model/tmdbModel");
 const watchList =require('../model/watchlistModel')
 const fetchVideoDetails=require('../utils/fetchVideoDetails')
 const API_OPTIONS = {
@@ -19,12 +19,12 @@ const API_OPTIONS = {
 
 async function updateMovieInDatabase(movies, Model, type) {
   for (const value of movies) {
-    const { original_title, original_name, overview, poster_path, id } = value;
+    const { original_title, original_name, overview, poster_path, id,media_type } = value;
 
     // Fetch videoTrailer data
     let videoTrailer;
 
-    if(type==="movie"){
+    if(type==="movie"||media_type=="movie"){
      videoTrailer = await fetchVideoDetails(id, original_title,original_title)
     }else{
     videoTrailer = await fetchVideoDetails(id, null,original_name)
@@ -40,7 +40,7 @@ async function updateMovieInDatabase(movies, Model, type) {
         overview,
         poster_path,
         id,
-        type,
+        media_type:type ||media_type,
       });
 
       // Save videoTrailer data if available
@@ -132,7 +132,7 @@ router.get('/airingtodaytvseries',auth,async(req,res)=>{
   try{
     const response=await axios.get(process.env.TV_Series_Airing_Today,API_OPTIONS);
     const airingtodaytvseries=await response.data.results
-    await updateMovieInDatabase(airingtodaytvseries,AiringTodayTvSeries,"tvseries");
+    await updateMovieInDatabase(airingtodaytvseries,AiringTodayTvSeries,"tv");
     const airingtodaytvseriesDetails=await AiringTodayTvSeries.find({})
     res.json(airingtodaytvseriesDetails)
   }catch(e){
@@ -144,7 +144,7 @@ router.get('/ontheairtvseries',auth,async(req,res)=>{
   try{
     const response=await axios.get(process.env.TV_Series_On_The_Air,API_OPTIONS);
     const ontheairtvseries=await response.data.results
-    await updateMovieInDatabase(ontheairtvseries,OnTheAirTvSeries,"tvseries");
+    await updateMovieInDatabase(ontheairtvseries,OnTheAirTvSeries,"tv");
     const ontheairtvseriesDetails=await OnTheAirTvSeries.find({})
     res.json(ontheairtvseriesDetails)
   }catch(e){
@@ -156,7 +156,7 @@ router.get('/populartvseries',auth,async(req,res)=>{
   try{
     const response=await axios.get(process.env.TV_Series_Popular,API_OPTIONS);
     const populartvseries=await response.data.results
-    await updateMovieInDatabase(populartvseries,PopularTvSeries,"tvseries");
+    await updateMovieInDatabase(populartvseries,PopularTvSeries,"tv");
     const populartvseriesDetails=await PopularTvSeries.find({})
     res.json(populartvseriesDetails)
   }catch(e){
@@ -169,7 +169,7 @@ router.get('/topratedtvseries',auth,async(req,res)=>{
   try{
     const response=await axios.get(process.env.TV_Series_Top_Rated,API_OPTIONS);
     const topratedtvseries=await response.data.results
-    await updateMovieInDatabase(topratedtvseries,TopRatedTvSeries,"tvseries");
+    await updateMovieInDatabase(topratedtvseries,TopRatedTvSeries,"tv");
     const topratedtvseriesDetails=await TopRatedTvSeries.find({})
     res.json(topratedtvseriesDetails)
   }catch(e){
@@ -186,6 +186,7 @@ router.post('/watchlist/add',auth,async(req,res)=>{
 try{
   await watchListData.save()
   res.send(watchListData)
+  console.log(watchListData)
 }catch(e){
   res.send(e)
 }
@@ -200,4 +201,35 @@ router.get('/watchlist',auth,async(req,res)=>{
 }
 
 })
+
+
+router.get('/getalllist', auth, async (req, res) => {
+  try {
+    // Define an array of URLs to fetch data from
+    const urls = [];
+    for (var i = 1; i <= 5; i++) {
+      const newgetallListUrl = process.env.All_List_URL.replace('{pagenum}', i);
+      urls.push(newgetallListUrl);
+    }
+    const allDetails = [];
+
+    // Iterate through the URLs and fetch data
+    for (const url of urls) {
+      const response = await axios.get(url, API_OPTIONS);
+      const data = response.data.results;
+      allDetails.push(...data);
+    }
+
+    // Assuming `updateMovieInDatabase` inserts data into the database
+    await updateMovieInDatabase(allDetails, GetAllList, null);
+    console.log(allDetails)
+    res.json(allDetails);
+  } catch (e) {
+    console.log(e);
+    res.status(500).json({ error: e });
+  }
+});
+
+
+
 module.exports = router;

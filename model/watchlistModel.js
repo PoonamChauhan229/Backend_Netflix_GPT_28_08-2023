@@ -22,7 +22,7 @@ const watchListSchema = new mongoose.Schema({
     videoTrailer:{
       type: String,
     },
-    type:{
+    media_type:{
       type: String,
       required:true
     },

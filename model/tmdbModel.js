@@ -25,9 +25,9 @@ const movieSchema = new mongoose.Schema({
       required: true,
       unique: true,
     },
-    type: {
+    media_type: {
       type: String,
-      enum: ["movie", "tvseries"], // You can restrict the value to "movie" or "tvseries"
+      enum: ["movie", "tv"], // You can restrict the value to "movie" or "tvseries"
       required: true,
   },
     videoTrailer:[videoTrailerSchema],
@@ -47,5 +47,10 @@ const AiringTodayTvSeries=mongoose.model("AiringTodayTvSeries",movieSchema);
 const OnTheAirTvSeries=mongoose.model("OnTheAirTvSeries",movieSchema);
 const PopularTvSeries=mongoose.model("PopularTvSeries",movieSchema);
 const TopRatedTvSeries=mongoose.model("TopRatedTvSeries",movieSchema);
+const GetAllList1=mongoose.model("GetAllList1",movieSchema)
+const GetAllList2=mongoose.model("GetAllList2",movieSchema)
+const GetAllList3=mongoose.model("GetAllList3",movieSchema)
+const GetAllList4=mongoose.model("GetAllList4",movieSchema)
+const GetAllList=mongoose.model("GetAllList",movieSchema)
 
-module.exports = {TrendingMovies,PopularMovies,NowPlayingMovies,TopRatedMovies,UpcomingMovies,AiringTodayTvSeries,OnTheAirTvSeries,PopularTvSeries,TopRatedTvSeries};
+module.exports = {TrendingMovies,PopularMovies,NowPlayingMovies,TopRatedMovies,UpcomingMovies,AiringTodayTvSeries,OnTheAirTvSeries,PopularTvSeries,TopRatedTvSeries,GetAllList1,GetAllList2,GetAllList3,GetAllList4,GetAllList};
