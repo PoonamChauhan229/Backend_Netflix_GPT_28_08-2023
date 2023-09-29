@@ -42,8 +42,8 @@ router.post('/users/signup',async(req,res)=>{
 })
 
 // SignIn /Login Route:
-router.post('/users/signin',auth,async(req,res)=>{
-
+router.post('/users/signin',async(req,res)=>{
+  
     const schema=Joi.object({
         email:Joi.string().pattern(/^([a-zA-Z0-9._%-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,})$/),
         password:Joi.string().pattern(/^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[a-zA-Z]).{8,}$/)
@@ -63,11 +63,11 @@ router.post('/users/signin',auth,async(req,res)=>{
     
     if(!isValidPassword) return res.status(400).send("Password Invalid")
 
-    console.log(user[0])
+   // console.log(user[0])
     //  Token
-     const token=await user[0].generateAuthToken()
+    const token=await user[0].generateAuthToken()
     console.log(token)
-     res.status(201).send({user,token})
+    res.status(201).send({user,token})
 })
 
 

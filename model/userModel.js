@@ -31,9 +31,13 @@
         
         // Save the user to the database
         await user.save();
-        
         return token;
     }
 
+    userSchema.virtual('WatchListRel',{
+        ref:"watchList",
+        localField:'_id',
+        foreignField:"owner"
+    })
     const User=mongoose.model('User',userSchema)
     module.exports=User;

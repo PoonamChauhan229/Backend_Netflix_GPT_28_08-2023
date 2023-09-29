@@ -13,7 +13,6 @@ const movieSchema = new mongoose.Schema({
     },
     original_name:{
       type:String,
-      default:"Random"
     },
     overview: {
       type: String,
@@ -26,7 +25,13 @@ const movieSchema = new mongoose.Schema({
       required: true,
       unique: true,
     },
+    type: {
+      type: String,
+      enum: ["movie", "tvseries"], // You can restrict the value to "movie" or "tvseries"
+      required: true,
+  },
     videoTrailer:[videoTrailerSchema],
+    
   });
 
 // movies

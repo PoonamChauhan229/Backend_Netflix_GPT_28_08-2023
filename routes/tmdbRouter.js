@@ -1,9 +1,10 @@
 const express = require('express');
 const router = express.Router();
 const axios = require('axios');
-
+const auth=require('../middleware/auth')
 const { TrendingMovies, PopularMovies, NowPlayingMovies,TopRatedMovies,UpcomingMovies,AiringTodayTvSeries,OnTheAirTvSeries,PopularTvSeries,TopRatedTvSeries } = require("../model/tmdbModel");
-
+const watchList =require('../model/watchlistModel')
+const fetchVideoDetails=require('../utils/fetchVideoDetails')
 const API_OPTIONS = {
   method: 'GET',
   headers: {
@@ -13,68 +14,54 @@ const API_OPTIONS = {
 };
 
 //console.log(process.env.Video_By_Movie_Id,process.env.Movie_Now_Playing,process.env.TMDB_token)
+// console.log("URL",process.env.Video_By_Movie_Id.replace('{id}', "787878"))
 
-async function updateMovieInDatabase(movies,Model){
+
+async function updateMovieInDatabase(movies, Model, type) {
   for (const value of movies) {
-    // Destructure the movie object
-    const { original_title,original_name,overview, poster_path, id } = value;
-    
-   // console.log(original_title, overview, poster_path, id);
-    
-   // Check if the movie already exists in the database
-   const existingMovie = await Model.findOne({ id: id });
-   if (!existingMovie) {
-    const newMovie = new Model({
-      original_title,
-      original_name,
-      overview,
-      poster_path,
-      id
-    });
-    const videoTrailer=await fetchVideoDetails(id,original_title)
-   // console.log(videoTrailer)
-    if (Array.isArray(videoTrailer) && videoTrailer.length > 0) {
-      newMovie.videoTrailer= videoTrailer     
-   }
-   await newMovie.save();   
-  }
-  }
-}
+    const { original_title, original_name, overview, poster_path, id } = value;
 
-async function fetchVideoDetails(id, original_title) {
-  try {
-    let videoUrl;
-    if (original_title) {
-      videoUrl = process.env.Video_By_Movie_Id.replace('{movie_id}', id);
-    } else {
-      videoUrl = process.env.Video_By_Tv_Id.replace('{series_id}', id);
+    // Fetch videoTrailer data
+    let videoTrailer;
+
+    if(type==="movie"){
+     videoTrailer = await fetchVideoDetails(id, original_title,original_title)
+    }else{
+    videoTrailer = await fetchVideoDetails(id, null,original_name)
     }
 
-    const videoResponse = await axios.get(videoUrl, API_OPTIONS);
-    if(!!videoResponse.data.results) return;
+    // Check if the movie already exists in the database
+    const existingMovie = await Model.findOne({ id: id });
 
-    const videoTrailers = videoResponse.data.results.map((video) => ({
-      name: video.name,
-      key: video.key,
-      site: video.site,
-      type: video.type,
-    }));
+    if (!existingMovie) {
+      const newMovie = new Model({
+        original_title,
+        original_name,
+        overview,
+        poster_path,
+        id,
+        type,
+      });
 
-    return videoTrailers;
-  } catch (error) {
-    //console.error('Error while fetching video details for movie/TV series with ID:', id, error.message);
-    // return [];
+      // Save videoTrailer data if available
+      if (Array.isArray(videoTrailer) && videoTrailer.length > 0) {
+        newMovie.videoTrailer = videoTrailer;
+      }
+
+      await newMovie.save();
+    }
   }
 }
 
 // nowplaying Movies Route
-router.get('/nowplayingmovies', async (req, res) => {
+router.get('/nowplayingmovies',auth,async (req, res) => {
+ // console.log("Headers",req.headers)
   try {
     const response = await axios.get(process.env.Movie_Now_Playing, API_OPTIONS);
     const nowPlayingMovies=response.data.results 
    // console.log(response.data);
   //await Movie.insertMany(nowPlayingMovies)
-   await updateMovieInDatabase(nowPlayingMovies,NowPlayingMovies);
+   await updateMovieInDatabase(nowPlayingMovies,NowPlayingMovies,"movie");
   const moviePlayingDetails =await NowPlayingMovies.find({})
     res.json(moviePlayingDetails);
   } catch (e) {
@@ -83,12 +70,12 @@ router.get('/nowplayingmovies', async (req, res) => {
   }
 });
 
-router.get('/trendingmovies',async(req,res)=>{
+router.get('/trendingmovies',auth,async(req,res)=>{
   try {
     const response = await axios.get(process.env.Movie_Trending, API_OPTIONS);
     const trendingMovies=response.data.results
     //console.log(trendingMovies)
-    await updateMovieInDatabase(trendingMovies,TrendingMovies);
+    await updateMovieInDatabase(trendingMovies,TrendingMovies,"movie");
   const movieTrendingDetails =await TrendingMovies.find({})
     res.json(movieTrendingDetails);
   }
@@ -97,12 +84,12 @@ router.get('/trendingmovies',async(req,res)=>{
   }
 })
 
-router.get('/popularmovies',async(req,res)=>{
+router.get('/popularmovies',auth,async(req,res)=>{
   try {
     const response = await axios.get(process.env.Movie_Popular, API_OPTIONS);
     const popularMovies=response.data.results
     //console.log(trendingMovies)
-    await updateMovieInDatabase(popularMovies,PopularMovies);
+    await updateMovieInDatabase(popularMovies,PopularMovies,"movie");
   const moviePopularDetails =await PopularMovies.find({})
     res.json(moviePopularDetails);
   }
@@ -112,12 +99,12 @@ router.get('/popularmovies',async(req,res)=>{
 })
 
 
-router.get('/topratedmovies',async(req,res)=>{
+router.get('/topratedmovies',auth,async(req,res)=>{
   try {
     const response = await axios.get(process.env.Movie_Top_Rated, API_OPTIONS);
     const topratedMovies=response.data.results
     //console.log(trendingMovies)
-    await updateMovieInDatabase(topratedMovies,TopRatedMovies);
+    await updateMovieInDatabase(topratedMovies,TopRatedMovies,"movie");
   const movieTopRatedDetails =await TopRatedMovies.find({})
     res.json(movieTopRatedDetails);
   }
@@ -126,12 +113,12 @@ router.get('/topratedmovies',async(req,res)=>{
   }
 })
 
-router.get('/upcomingmovies',async(req,res)=>{
+router.get('/upcomingmovies',auth,async(req,res)=>{
   try {
     const response = await axios.get(process.env.Movie_Upcoming, API_OPTIONS);
     const upcomingMovies=response.data.results
     //console.log(trendingMovies)
-    await updateMovieInDatabase(upcomingMovies,UpcomingMovies);
+    await updateMovieInDatabase(upcomingMovies,UpcomingMovies,"movie");
     const movieupcomingDetails =await UpcomingMovies.find({})
     res.json(movieupcomingDetails);
   }
@@ -141,11 +128,11 @@ router.get('/upcomingmovies',async(req,res)=>{
 })
 
 // TV Shows
-router.get('/airingtodaytvseries',async(req,res)=>{
+router.get('/airingtodaytvseries',auth,async(req,res)=>{
   try{
     const response=await axios.get(process.env.TV_Series_Airing_Today,API_OPTIONS);
     const airingtodaytvseries=await response.data.results
-    await updateMovieInDatabase(airingtodaytvseries,AiringTodayTvSeries);
+    await updateMovieInDatabase(airingtodaytvseries,AiringTodayTvSeries,"tvseries");
     const airingtodaytvseriesDetails=await AiringTodayTvSeries.find({})
     res.json(airingtodaytvseriesDetails)
   }catch(e){
@@ -153,11 +140,11 @@ router.get('/airingtodaytvseries',async(req,res)=>{
   }
 })
 
-router.get('/ontheairtvseries',async(req,res)=>{
+router.get('/ontheairtvseries',auth,async(req,res)=>{
   try{
     const response=await axios.get(process.env.TV_Series_On_The_Air,API_OPTIONS);
     const ontheairtvseries=await response.data.results
-    await updateMovieInDatabase(ontheairtvseries,OnTheAirTvSeries);
+    await updateMovieInDatabase(ontheairtvseries,OnTheAirTvSeries,"tvseries");
     const ontheairtvseriesDetails=await OnTheAirTvSeries.find({})
     res.json(ontheairtvseriesDetails)
   }catch(e){
@@ -165,15 +152,11 @@ router.get('/ontheairtvseries',async(req,res)=>{
   }
 })
 
-
-
-
-
-router.get('/populartvseries',async(req,res)=>{
+router.get('/populartvseries',auth,async(req,res)=>{
   try{
     const response=await axios.get(process.env.TV_Series_Popular,API_OPTIONS);
     const populartvseries=await response.data.results
-    await updateMovieInDatabase(populartvseries,PopularTvSeries);
+    await updateMovieInDatabase(populartvseries,PopularTvSeries,"tvseries");
     const populartvseriesDetails=await PopularTvSeries.find({})
     res.json(populartvseriesDetails)
   }catch(e){
@@ -182,15 +165,39 @@ router.get('/populartvseries',async(req,res)=>{
 })
 
 
-router.get('/topratedtvseries',async(req,res)=>{
+router.get('/topratedtvseries',auth,async(req,res)=>{
   try{
     const response=await axios.get(process.env.TV_Series_Top_Rated,API_OPTIONS);
     const topratedtvseries=await response.data.results
-    await updateMovieInDatabase(topratedtvseries,TopRatedTvSeries);
+    await updateMovieInDatabase(topratedtvseries,TopRatedTvSeries,"tvseries");
     const topratedtvseriesDetails=await TopRatedTvSeries.find({})
     res.json(topratedtvseriesDetails)
   }catch(e){
     console.log(e)
   }
+})
+
+//watchlist 
+router.post('/watchlist/add',auth,async(req,res)=>{
+  const watchListData=new watchList({
+    ...req.body,
+    owner:req.user._id
+  })
+try{
+  await watchListData.save()
+  res.send(watchListData)
+}catch(e){
+  res.send(e)
+}
+
+})
+router.get('/watchlist',auth,async(req,res)=>{
+ try{
+  const watchlistgetData=await watchList.find({})
+  res.send(watchlistgetData)
+}catch(e){
+  res.send(e)
+}
+
 })
 module.exports = router;
