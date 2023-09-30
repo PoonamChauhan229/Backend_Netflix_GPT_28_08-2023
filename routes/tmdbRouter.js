@@ -222,8 +222,8 @@ router.get('/getalllist', auth, async (req, res) => {
 
     // Assuming `updateMovieInDatabase` inserts data into the database
     await updateMovieInDatabase(allDetails, GetAllList, null);
-    console.log(allDetails)
-    res.json(allDetails);
+    const allMovieTvDetails=await GetAllList.find({})
+    res.json(allMovieTvDetails);
   } catch (e) {
     console.log(e);
     res.status(500).json({ error: e });
