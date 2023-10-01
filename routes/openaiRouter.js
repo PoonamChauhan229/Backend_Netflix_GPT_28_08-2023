@@ -3,7 +3,7 @@ const router = express.Router();
 const axios = require('axios');
 const auth=require('../middleware/auth')
 const OpenAI=require('openai')
-
+const fetchMovieSearchKeyword=require('../utils/fetchMovieSearchKeyword')
 const openai = new OpenAI({
     apiKey: process.env.Open_AI_API_Key, // defaults to process.env["OPENAI_API_KEY"]
   });
@@ -17,9 +17,13 @@ router.post('/getopenaidata',async(req,res)=> {
       messages: [{ role: 'user', content: gptQueryData}],
       model: 'gpt-3.5-turbo',
     });
-  
+    const getGptResults=gptResults?.choices[0]?.message.content.split(",")
     // console.log(gptResults.choices);
-    res.json(gptResults.choices)
+    const promiseArray= getGptResults.map((element)=>fetchMovieSearchKeyword(element))
+
+    const tmdbResults=await Promise.all(promiseArray)
+
+    res.json({"gptSearchList":getGptResults,"tmdbSearchResults":tmdbResults})
   })
   
 
