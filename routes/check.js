@@ -48,10 +48,10 @@ router.get('/getalllist', auth, async (req, res) => {
 
     // Assuming `updateMovieInDatabase` inserts data into the database
     await updateMovieInDatabase(allDetails, GetAllList, null);
-    console.log(allDetails)
+    //console.log(allDetails)
     res.json(allDetails);
   } catch (e) {
-    console.log(e);
+    //console.log(e);
     res.status(500).json({ error: e });
   }
 });

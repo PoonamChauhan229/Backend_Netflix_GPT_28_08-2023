@@ -4,7 +4,7 @@ const User=require('../model/userModel')
 const auth=async(req,res,next)=>{
     
     try{
-    console.log("Auth is running")
+   // console.log("Auth is running")
     //console.log(req.headers)
     // const token = req.header('Authorization').replace('Bearer ', '');
     // console.log(token)

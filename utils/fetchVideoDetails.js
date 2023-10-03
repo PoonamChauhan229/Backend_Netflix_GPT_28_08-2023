@@ -15,19 +15,19 @@ async function fetchVideoDetails(id, original_title,searchKey) {
       let videoUrl;
       if (original_title) {
         videoUrl = process.env.Video_By_Movie_Id.replace('{movie_id}', id);
-        console.log("movie url",videoUrl)
+       // console.log("movie url",videoUrl)
       } else {
         videoUrl = process.env.Video_By_Tv_Id.replace('{series_id}', id);
-        console.log("tvseries url",videoUrl)
+        //console.log("tvseries url",videoUrl)
       }
   
       const videoResponse = await axios.get(videoUrl,API_OPTIONS);
-      console.log("video",videoResponse.data.results)
+     // console.log("video",videoResponse.data.results)
 
       if(!videoResponse.data.results || videoResponse.data.results.length==0){
-        console.log(searchKey)
+       // console.log(searchKey)
         console.log('No video trailers found. Fetching related videos from YouTube.');
-        console.log(process.env.YOUTUBE_URL.replace('{searchKey}',searchKey))
+        //console.log(process.env.YOUTUBE_URL.replace('{searchKey}',searchKey))
         // Fetch related videos from YouTube using your API key
         const youtubeVideoUrl=process.env.YOUTUBE_URL.replace('{searchKey}', searchKey);
 

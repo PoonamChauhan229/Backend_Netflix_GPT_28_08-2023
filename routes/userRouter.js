@@ -55,11 +55,11 @@ router.post('/users/signin',async(req,res)=>{
     let user=await User.find({email:req?.body?.email})
     //console.log(user[0])
     if(!user) return res.status(400).send("Email address Invalid")
-    console.log("User is",user)
+    //console.log("User is",user)
 
     //comparing the PASSWORD
     const isValidPassword=await bcrypt.compare(req.body.password,user[0].password)
-    console.log(isValidPassword)
+    //console.log(isValidPassword)
     
     if(!isValidPassword) return res.status(400).send("Password Invalid")
 
