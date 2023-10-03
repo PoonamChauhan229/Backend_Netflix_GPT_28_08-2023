@@ -54,4 +54,5 @@ router.get('/getalllist', auth, async (req, res) => {
     //console.log(e);
     res.status(500).json({ error: e });
   }
+  
 });
