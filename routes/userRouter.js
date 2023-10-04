@@ -42,33 +42,43 @@ router.post('/users/signup',async(req,res)=>{
 })
 
 // SignIn /Login Route:
-router.post('/users/signin',async(req,res)=>{
-  
-    const schema=Joi.object({
-        email:Joi.string().pattern(/^([a-zA-Z0-9._%-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,})$/),
-        password:Joi.string().pattern(/^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[a-zA-Z]).{8,}$/)
-    })
-    const {error}=schema.validate(req.body)
-    if(error) return res.status(400).send(error.details[0].message)
+router.post('/users/signin', async (req, res) => {
+try {
+    // Input validation using Joi
+    const schema = Joi.object({
+      email: Joi.string().email().required(),
+      password: Joi.string().min(8).required(),
+    });
 
-    //verifying the email
-    let user=await User.find({email:req?.body?.email})
-    //console.log(user[0])
-    if(!user) return res.status(400).send("Email address Invalid")
-    //console.log("User is",user)
+    const { error } = schema.validate(req.body);
 
-    //comparing the PASSWORD
-    const isValidPassword=await bcrypt.compare(req.body.password,user[0].password)
-    //console.log(isValidPassword)
-    
-    if(!isValidPassword) return res.status(400).send("Password Invalid")
+    if (error) {
+      return res.status(400).json({ error: error.details[0].message });
+    }
 
-   // console.log(user[0])
-    //  Token
-    const token=await user[0].generateAuthToken()
-    console.log(token)
-    res.status(201).send({user,token})
-})
+    // Find the user by email
+    const user = await User.findOne({ email: req.body.email });
+
+    if (!user) {
+      return res.status(400).json({ error: 'Invalid email address' });
+    }
+
+    // Compare the PASSWORD
+    const isValidPassword = await bcrypt.compare(req.body.password, user.password);
+
+    if (!isValidPassword) {
+      return res.status(400).json({ error: 'Invalid password' });
+    }
+
+    // Generate and send a token
+    const token = await user.generateAuthToken();
+
+    res.status(201).json({ user, token });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
 
 
 module.exports=router;

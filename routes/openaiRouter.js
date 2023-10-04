@@ -8,7 +8,7 @@ const openai = new OpenAI({
     apiKey: process.env.Open_AI_API_Key, // defaults to process.env["OPENAI_API_KEY"]
   });
   
-router.post('/getopenaidata',async(req,res)=> {
+router.post('/getopenaidata',auth,async(req,res)=> {
     const gptQueryData =
       "Act as a Movie/Tv Show Recommendation system and suggest some movies/TvShows for the query : " +
       req.body.gptQuery+
