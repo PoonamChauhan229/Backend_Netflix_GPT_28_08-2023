@@ -51,4 +51,5 @@ const TopRatedTvSeries=mongoose.model("TopRatedTvSeries",movieSchema);
 
 const GetAllList=mongoose.model("GetAllList",movieSchema)
 
+
 module.exports = {TrendingMovies,PopularMovies,NowPlayingMovies,TopRatedMovies,UpcomingMovies,AiringTodayTvSeries,OnTheAirTvSeries,PopularTvSeries,TopRatedTvSeries,GetAllList};
