@@ -15,7 +15,7 @@ dotenv.config();
 // app.use(cors())
 
 const corsOptions = {
-  origin: 'http://localhost:3000', // Replace with your frontend domain
+  origin: 'https://netflix-gpt229.netlify.app', // Replace with your frontend domain
   methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
   credentials: true,
   optionsSuccessStatus: 204,
